@@ -48,19 +48,62 @@ A plataforma monitora o consumo do prédio em tempo real e distribui automaticam
 ---
 
 ## Arquitetura
+### Arquitetura Geral
 
-```text
-Usuário
-↓
-Carregador GoodWe
-↓
-ChargeGrid Intelligence
-↓
-Controle de Demanda
-↓
-Tarifação
-↓
-Dashboard
+```mermaid
+flowchart LR
+
+A[Medidor de Energia<br/>MODBUS]
+B[ChargeGrid Intelligence]
+C[Carregador GoodWe<br/>OCPP]
+D[Dashboard Comercial]
+E[Cliente]
+F[Sistema de Pagamento]
+G[Cancela Inteligente]
+
+A --> B
+
+B --> C
+B --> D
+B --> F
+
+E --> C
+
+F --> G
+
+D --> E
+```
+
+### Arquitetura do Fluxo do Controle da Demanda
+```mermaid
+flowchart LR
+
+A[Leitura do Consumo Predial]
+--> B{Consumo + Recarga<br/>Ultrapassa Limite?}
+
+B -- Sim --> C[Reduz Potência dos Carregadores]
+B -- Não --> D[Distribui Potência Normalmente]
+C --> E[Atualiza Carregadores via OCPP]
+D --> E
+E --> F[Dashboard em Tempo Real]
+```
+
+### Sequência Operacional
+```mermaid
+sequenceDiagram
+    autonumber
+
+    participant M as Medidor MODBUS
+    participant C as ChargeGrid
+    participant E as EV Charger OCPP
+    participant D as Dashboard
+
+    M->>C: Consumo atual do prédio
+    C->>C: Calcula potência disponível
+    C->>E: Atualiza limite de recarga
+    E->>D: Consumo da sessão
+
+    Note over E,D: Se bateria atingir 100%<br/>e permanecer conectada<br/>por mais de 10 minutos,<br/>é aplicada taxa de ociosidade
 ```
 
 ## Tecnologias
