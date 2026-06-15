@@ -25,7 +25,6 @@ A solução realiza:
 - Taxa de ociosidade
 - Simulação de integração OCPP
 - Simulação de integração MODBUS
-- Previsão de demanda utilizando IA
 
 ---
 
